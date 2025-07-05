@@ -1,0 +1,5 @@
+data
+data/*
+out
+*/.DS_Store
+*.json

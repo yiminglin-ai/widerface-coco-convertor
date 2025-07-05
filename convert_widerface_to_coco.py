@@ -1,4 +1,5 @@
 import argparse
+from datetime import datetime, timezone
 import json
 import os
 import os.path as osp
@@ -83,6 +84,7 @@ def parse_wider_gt(dets_file_name, isEllipse=False):
 
     return det_dict
 
+
 def parse_args():
     parser = argparse.ArgumentParser(description='Convert dataset')
     parser.add_argument(
@@ -108,7 +110,8 @@ def convert_wider_annots(args):
     categories = [{"id": 1, "name": 'face'}]
     for sset in subset:
         print(f'Processing subset {sset}')
-        out_json_name = osp.join(args.outdir, f'wider_face_{sset}_annot_coco_style.json')
+        out_json_name = osp.join(
+            args.outdir, f'wider_face_{sset}_annot_coco_style.json')
         data_dir = osp.join(args.datadir, f'WIDER_{sset}', 'images')
         img_id = 0
         ann_id = 0
@@ -117,8 +120,10 @@ def convert_wider_annots(args):
         ann_dict = {}
         images = []
         annotations = []
-        ann_file = os.path.join(args.datadir, 'wider_face_split', f'wider_face_{sset}_bbx_gt.txt')
-        wider_annot_dict = parse_wider_gt(ann_file)  # [im-file] = [[x,y,w,h], ...]
+        ann_file = os.path.join(
+            args.datadir, 'wider_face_split', f'wider_face_{sset}_bbx_gt.txt')
+        wider_annot_dict = parse_wider_gt(
+            ann_file)  # [im-file] = [[x,y,w,h], ...]
 
         for filename in wider_annot_dict.keys():
             if len(images) % 100 == 0:
@@ -129,8 +134,8 @@ def convert_wider_annots(args):
             image['id'] = img_id
             img_id += 1
             im = Image.open(os.path.join(data_dir, filename))
-            image['width'] = im.height
-            image['height'] = im.width
+            image['width'] = im.width
+            image['height'] = im.height
             image['file_name'] = filename
             images.append(image)
 
@@ -150,6 +155,24 @@ def convert_wider_annots(args):
         ann_dict['images'] = images
         ann_dict['categories'] = categories
         ann_dict['annotations'] = annotations
+
+        # Adding info
+        ann_dict['info'] = {
+            "year": str(datetime.now().year),
+            "version": "11",
+            "description": "some dataset",
+            "contributor": "",
+            "url": "http://shuoyang1213.me/WIDERFACE/",
+            "date_created": datetime.now(timezone.utc).isoformat()
+        }
+
+        # Adding license
+        ann_dict['license'] = [{
+            "id": 1,
+            "url": "https://creativecommons.org/licenses/by/4.0/",
+            "name": "CC BY 4.0"
+        }]
+
         print("Num categories: %s" % len(categories))
         print("Num images: %s" % len(images))
         print("Num annotations: %s" % len(annotations))

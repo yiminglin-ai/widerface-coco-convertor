@@ -17,5 +17,5 @@ data
 
 convert the annotations:
 ```shell
-python scripts/convert_widerface_to_coco.py --datadir data/widerface  --subset all --outdir ./
+python convert_widerface_to_coco.py --datadir data/widerface  --subset all --outdir ./
 ```

@@ -129,8 +129,8 @@ def convert_wider_annots(args):
             image['id'] = img_id
             img_id += 1
             im = Image.open(os.path.join(data_dir, filename))
-            image['width'] = im.height
-            image['height'] = im.width
+            image['width'] = im.width
+            image['height'] = im.height
             image['file_name'] = filename
             images.append(image)
 
